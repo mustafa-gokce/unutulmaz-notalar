@@ -67,8 +67,8 @@ def api_get_song(song_id):
 
 # api search songs
 @application.route("/api/getir/eserler/<int:author_id>/<int:genre_id>/<int:form_id>/<int:method_id>/<int:tune_id>/"
-                   "<int:composer_id>/<int:offset>")
-def api_get_songs(author_id, genre_id, form_id, method_id, tune_id, composer_id, offset):
+                   "<int:composer_id>/<int:page_id>")
+def api_get_songs(author_id, genre_id, form_id, method_id, tune_id, composer_id, page_id):
 
     # format the request
     request = {"yazar": author_id,
@@ -77,6 +77,9 @@ def api_get_songs(author_id, genre_id, form_id, method_id, tune_id, composer_id,
                "usul": method_id,
                "makam": tune_id,
                "bestekar": composer_id}
+
+    # calculate the offset
+    offset = max((page_id - 1) * 10, 0)
 
     # get the conditions except offset
     conditions = ""
