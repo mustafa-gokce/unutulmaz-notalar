@@ -62,6 +62,13 @@ class Database:
             # get results from database
             results = my_cursor.fetchall()
 
+            # parse results
+            columns = [desc[0] for desc in my_cursor.description]
+            parsed_results = []
+            for row in results:
+                row = dict(zip(columns, row))
+                parsed_results.append(row)
+
             # close cursor and database connection
             my_cursor.close()
             database.close()
@@ -73,6 +80,6 @@ class Database:
             print(e)
 
             # fallback to none
-            results = None
+            parsed_results = None
 
-        return results
+        return parsed_results
