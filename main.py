@@ -57,11 +57,51 @@ def api_get_authors():
     return flask.jsonify(results)
 
 
-# api get songs
-@application.route("/api/getir/eserler/<int:song_id>")
-def api_get_songs(song_id):
+# api get song
+@application.route("/api/getir/eser/<int:song_id>")
+def api_get_song(song_id):
     results = helper.Database.from_database("SELECT * FROM eserler WHERE id={0}".format(song_id))
-    results = {"eserler": results}
+    results = {"eser": results}
+    return flask.jsonify(results)
+
+
+# api search songs
+@application.route("/api/getir/eserler/<int:author_id>/<int:genre_id>/<int:form_id>/<int:method_id>/<int:tune_id>/"
+                   "<int:composer_id>/<int:offset>")
+def api_get_songs(author_id, genre_id, form_id, method_id, tune_id, composer_id, offset):
+
+    # format the request
+    request = {"yazar": author_id,
+               "tur": genre_id,
+               "form": form_id,
+               "usul": method_id,
+               "makam": tune_id,
+               "bestekar": composer_id}
+
+    # get the conditions except offset
+    conditions = ""
+    for key in request.keys():
+        if request[key] != 0:
+            conditions += " {0}={1} AND".format(key, request[key])
+    conditions = conditions[:-4]
+
+    # if there are some conditions
+    if conditions != "":
+
+        # query the database
+        results = helper.Database.from_database(
+            "SELECT * FROM eserler WHERE{0} ORDER BY id LIMIT 10 OFFSET {1}".format(conditions, offset))
+
+        # format the results
+        results = {"eserler": results}
+
+    # there are no conditions
+    else:
+
+        # return to none
+        results = {"eserler": []}
+
+    # send the response
     return flask.jsonify(results)
 
 
